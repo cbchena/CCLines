@@ -8,11 +8,11 @@
   <version>1.0</version>
 
   <!--邮箱和网址，上传到Plugins仓库会在你的插件界面显示 -->
-  <vendor email="2505652@qq.com" url="http://www.baidu.com">Not</vendor>
+  <vendor email="2505652@qq.com" url="https://github.com/cbchena/CCLines">Node</vendor>
 
   <!-- 你的插件的简介，同样是显示在Plugins仓库信息界面 -->
   <description><![CDATA[
-      Computer code lines.</em>
+      统计代码行数，允许在设置界面添加用户自定义统计类型。</em>
     ]]></description>
 
   <!-- 版本更新信息-->
