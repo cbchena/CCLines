@@ -1,0 +1,20 @@
+[
+  {
+    "suffix": "JAVA",
+    "start_more_comment": "/*",
+    "end_more_comment": "*/",
+    "single_comment": "//"
+  },
+  {
+    "suffix": "PY",
+    "start_more_comment": "''',\"\"\"",
+    "end_more_comment": "''',\"\"\"",
+    "single_comment": "#"
+  },
+  {
+    "suffix": "XML",
+    "start_more_comment": "<!--",
+    "end_more_comment": "-->",
+    "single_comment": ""
+  }
+]

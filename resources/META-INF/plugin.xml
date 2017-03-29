@@ -1,0 +1,62 @@
+<idea-plugin version="2">
+
+  <!--插件ID，自定义，如果要上传到Plugins仓库不能有重复ID -->
+  <id>2017031807130000</id>
+
+  <!--插件名称-->
+  <name>CCLines</name>
+  <version>1.0</version>
+
+  <!--邮箱和网址，上传到Plugins仓库会在你的插件界面显示 -->
+  <vendor email="2505652@qq.com" url="http://www.baidu.com">Not</vendor>
+
+  <!-- 你的插件的简介，同样是显示在Plugins仓库信息界面 -->
+  <description><![CDATA[
+      统计代码行数，允许在设置界面添加用户自定义统计类型。</em>
+    ]]></description>
+
+  <!-- 版本更新信息-->
+  <change-notes><![CDATA[
+      First version.<br>
+      <em>most HTML tags may be used</em>
+    ]]>
+  </change-notes>
+
+  <!-- please see http://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/build_number_ranges.html for description -->
+  <idea-version since-build="145.0"/>
+
+  <!-- please see http://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/plugin_compatibility.html
+       on how to target different products -->
+  <!-- uncomment to enable plugin in all products -->
+  <depends>com.intellij.modules.lang</depends>
+
+
+  <!--扩展组件注册 要是用到applicationConfigurable即项目配置等就在这里注册-->
+  <extensions defaultExtensionNs="com.intellij">
+
+    <!-- 自定义控制台输入 -->
+    <toolWindow canCloseContents="true" anchor="bottom"
+                id="Compute Code Lines" secondary="false" icon="/myToolWindow/chk_normal.png"
+                factoryClass="tools.ToolFactoryCompute">
+    </toolWindow>
+
+    <!-- 自定义配置界面 2017/3/20 14:05 -->
+    <applicationConfigurable instance="settings.Settings"/>
+
+  </extensions>
+
+  <!--Action注册，比如在某个菜单下增加一个按钮就要在这注册 -->
+  <actions>
+    <!-- Add your actions here -->
+
+    <action id="ActionCompute.ID" class="action.ActionCompute" text="Compute Lines" description="Compute code lines.">
+      <add-to-group group-id="CodeMenu" anchor="first"/>
+      <keyboard-shortcut keymap="$default" first-keystroke="ctrl meta alt C"/>
+    </action>
+    <action id="ActionComputePopupMenu" class="action.ActionComputePopupMenu" text="Compute Lines"
+            icon="/myToolWindow/chk_normal.png" description="Compute code lines.">
+      <add-to-group group-id="ProjectViewPopupMenu" anchor="last"/>
+    </action>
+  </actions>
+
+</idea-plugin>
