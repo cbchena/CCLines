@@ -96,14 +96,15 @@ public class DialogAddSuffix extends JDialog {
 
         String name = this.txtName.getText();
         String suffix = this.txtSuffix.getText();
-        String single = this.txtSingleComment.getText();
-        String start = this.txtStartWith.getText();
-        String end = this.txtEndWith.getText();
+//        String single = this.txtSingleComment.getText();
+//        String start = this.txtStartWith.getText();
+//        String end = this.txtEndWith.getText();
         if (name != null && name.trim().length() > 0
                 && suffix != null && suffix.trim().length() > 0
-                && single != null && single.trim().length() > 0
-                && start != null && start.trim().length() > 0
-                && end != null && end.trim().length() > 0)
+//                && single != null && single.trim().length() > 0
+//                && start != null && start.trim().length() > 0
+//                && end != null && end.trim().length() > 0
+                )
             isCommit = true;
 
         return isCommit;
@@ -124,10 +125,20 @@ public class DialogAddSuffix extends JDialog {
         String end = this.txtEndWith.getText();
         if (name != null && name.trim().length() > 0
                 && suffix != null && suffix.trim().length() > 0
-                && single != null && single.trim().length() > 0
-                && start != null && start.trim().length() > 0
-                && end != null && end.trim().length() > 0
+//                && single != null && single.trim().length() > 0
+//                && start != null && start.trim().length() > 0
+//                && end != null && end.trim().length() > 0
                 && !SuffixMapping.mapData.containsKey(suffix.trim().toUpperCase())) {
+
+            if(single == null)
+                single = "";
+
+            if(start == null)
+                start = "";
+
+            if(end == null)
+                end = "";
+
             java.util.List<TypeEntity> lstTypes = ComputeType.getTypes(); // 获取统计类型 2017/3/27 15:00
             TypeEntity typeEntity = new TypeEntity();
             typeEntity.setIndex(lstTypes.size() + 1)

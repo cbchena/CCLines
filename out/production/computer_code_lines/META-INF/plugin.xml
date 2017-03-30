@@ -5,10 +5,10 @@
 
   <!--插件名称-->
   <name>CCLines</name>
-  <version>1.0</version>
+  <version>1.2</version>
 
   <!--邮箱和网址，上传到Plugins仓库会在你的插件界面显示 -->
-  <vendor email="2505652@qq.com" url="https://github.com/cbchena/CCLines">Node</vendor>
+  <vendor email="2505652@qq.com" url="https://github.com/cbchena/CCLines">Devin</vendor>
 
   <!-- 你的插件的简介，同样是显示在Plugins仓库信息界面 -->
   <description><![CDATA[
@@ -17,8 +17,7 @@
 
   <!-- 版本更新信息-->
   <change-notes><![CDATA[
-      First version.<br>
-      <em>most HTML tags may be used</em>
+      修复【添加】、【删除】统计类型出现错误的问题。
     ]]>
   </change-notes>
 

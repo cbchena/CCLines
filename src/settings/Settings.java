@@ -74,6 +74,10 @@ public class Settings implements Configurable {
 
                 // 刷新界面 2017/3/27 15:34
                 mDefaultTableModel.removeRow(_curRow);
+
+                // 删除按钮禁止点击 2017/3/30 10:25
+                buttonDel.setEnabled(false);
+                _curRow = -1;
             }
         });
 
@@ -81,6 +85,11 @@ public class Settings implements Configurable {
         buttonAdd.addActionListener(new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
+
+                // 添加前，先保存当前环境 2017/3/30 10:31
+                _isModify = false; // 标志修改完成  2017/3/30 10:20
+                ComputeType.setTypes(_lstType); // 修改  2017/3/30 10:20
+                SuffixMapping.removeMappings(_lstDels);
                 DialogAddSuffix dialogAddSuffix = new DialogAddSuffix(new SelectCallBack() {
                     @Override
                     public void select(String content) {
