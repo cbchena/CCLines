@@ -81,11 +81,16 @@ public class ActionCompute extends AnAction {
                                 }
                             });
 
-                            jTextArea = (JTextArea) ((JScrollPane)toolWindow.getContentManager().getContent(0)
-                                    .getComponent().getComponent(0)).getViewport().getComponent(0);
-                            if (jTextArea != null) {
-                                jTextArea.append("开始统计，项目路径为：\"" + content + "\".\n");
-                                _getFiles(content);
+                            // ToolWindow未初始化时，可能为空 2017/4/4 18:20
+                            try {
+                                jTextArea = (JTextArea) ((JScrollPane) toolWindow.getContentManager().getContent(0)
+                                        .getComponent().getComponent(0)).getViewport().getComponent(0);
+                                if (jTextArea != null) {
+                                    jTextArea.append("开始统计，项目路径为：\"" + content + "\".\n");
+                                    _getFiles(content);
+                                }
+                            } catch (Exception e1) {
+
                             }
                         }
                     }

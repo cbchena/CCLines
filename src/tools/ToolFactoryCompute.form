@@ -25,7 +25,9 @@
         <children>
           <component id="cbf77" class="javax.swing.JTextArea" binding="txtContent">
             <constraints/>
-            <properties/>
+            <properties>
+              <text value="Initialization complete."/>
+            </properties>
           </component>
         </children>
       </scrollpane>

@@ -1,6 +1,7 @@
 package compute;
 
-import java.io.*;
+import com.intellij.ide.util.PropertiesComponent;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -11,24 +12,22 @@ import java.util.List;
  */
 public class ComputeType {
 
+    private static final String TYPE_DATA_KEY = "type_data_key";
+
     /**
      * 获取类型 2017/3/21 13:42
      * @return 类型列表
      */
     public static List<TypeEntity> getTypes() {
         List<TypeEntity> lstType = new ArrayList<>();
-        BufferedReader bf = null;
         try {
             lstType.clear(); // 清空数据 2017/3/20 10:56
-            File file = new File(SuffixMapping.class.getResource("/suffix/compute.txt").getFile()); // 读取class内部资源 2017/3/20 11:34
-            if (!file.exists()) // 判断是否存在，不存在，则新创建一个文件 2017/3/21 13:44
-                file.createNewFile();
-
-            bf = new BufferedReader(new FileReader(file));
-            String line;
+            String[] lines = _getData();
             String[] types;
+            String line = null;
             TypeEntity typeEntity;
-            while ((line = bf.readLine()) != null) {
+            for (int i = 0; i < lines.length; i++) {
+                line = lines[i];
                 types = line.split("\\*\\*");
                 typeEntity = new TypeEntity();
                 typeEntity.setIndex(Integer.parseInt(types[0]))
@@ -55,17 +54,31 @@ public class ComputeType {
             });
         } catch (Exception e) {
             System.out.println("Types Exception is " + e.getMessage());
-        } finally {
-            if (bf != null) {
-                try {
-                    bf.close();
-                } catch (IOException e) {
-                    System.out.println("Types IOException is " + e.getMessage());
-                }
-            }
         }
 
         return lstType;
+    }
+
+    /**
+     * 获取数据列表 2017/4/1 20:09
+     * @return
+     */
+    private static String[] _getData() {
+        if (PropertiesComponent.getInstance().isValueSet(TYPE_DATA_KEY)) {
+            return PropertiesComponent.getInstance().getValues(TYPE_DATA_KEY);
+        } else {
+            return new String[] {"1**true**Java**java**false",
+                    "2**true**Xml**xml**false",
+                    "3**true**Python**py**false"};
+        }
+    }
+
+    /**
+     * 保存数据 2017/4/1 20:20
+     * @param array
+     */
+    private static void _saveData(String[] array) {
+        PropertiesComponent.getInstance().setValues(TYPE_DATA_KEY, array);
     }
 
     /**
@@ -75,32 +88,21 @@ public class ComputeType {
      */
     public static boolean setTypes(List<TypeEntity> lstTypes) {
         boolean isResult = false;
-        BufferedWriter bw = null;
         try {
-            File file = new File(SuffixMapping.class.getResource("/suffix/compute.txt").getFile()); // 读取class内部资源 2017/3/20 11:34
-            if (file.exists()) { // 判断是否存在，存在，则删除 2017/3/21 13:44
-                file.delete();
-            }
-
-            // 重新创建 2017/3/21 13:45
-            file.createNewFile();
-
-            bw = new BufferedWriter(new FileWriter(file));
+            String line;
+            String[] lines = new String[lstTypes.size()];
+            int idx = 0;
             for (TypeEntity entity:lstTypes) {
-                bw.write(entity.getIndex() + "**" + entity.isCheck() + "**"
+                line = entity.getIndex() + "**" + entity.isCheck() + "**"
                         + entity.getType().toUpperCase() + "**" + entity.getSuffix().toUpperCase()
-                        + "**" + entity.isDel() + "\n");
+                        + "**" + entity.isDel();
+
+                lines[idx++] = line;
             }
+
+            _saveData(lines);
         } catch (Exception e) {
             System.out.println("Types Exception is " + e.getMessage());
-        } finally {
-            if (bw != null) {
-                try {
-                    bw.close();
-                } catch (IOException e) {
-                    System.out.println("Types IOException is " + e.getMessage());
-                }
-            }
         }
 
         return isResult;

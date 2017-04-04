@@ -249,4 +249,12 @@ public class Settings implements Configurable {
         table1.getColumnModel().getColumn(1).setPreferredWidth(465);
         table1.setRowHeight(25);
     }
+
+    /**
+     * 一定要实现，否则在Android Studio中会报错 2017/4/4 17:40
+     */
+    @Override
+    public void disposeUIResources() {
+
+    }
 }

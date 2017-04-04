@@ -45,9 +45,17 @@ public class ActionComputePopupMenu extends AnAction {
                 }
             });
 
-            jTextArea = (JTextArea) ((JScrollPane)toolWindow.getContentManager().getContent(0)
-                    .getComponent().getComponent(0)).getViewport().getComponent(0);
+            // ToolWindow未初始化时，可能为空 2017/4/4 18:20
+            try {
+                jTextArea = (JTextArea) ((JScrollPane) toolWindow.getContentManager().getContent(0)
+                        .getComponent().getComponent(0)).getViewport().getComponent(0);
+            } catch (Exception e1) {
+
+            }
         }
+
+        if (jTextArea == null)
+            return;
 
         // 获取当前选择的文件或文件夹路径 2017/3/24 15:48
         VirtualFile file = CommonDataKeys.VIRTUAL_FILE.getData(e.getDataContext());
@@ -58,7 +66,7 @@ public class ActionComputePopupMenu extends AnAction {
             return;
         }
 
-        String path = file.getPath();
+        String path = file.getPath(); // 获取统计路径 2017/3/24 15:50
 
         // 初始化统计格式 2017/3/20 10:57
         SuffixMapping.initMapping();

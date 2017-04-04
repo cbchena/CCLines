@@ -1,18 +1,19 @@
 package compute;
 
-import org.codehaus.jettison.json.JSONArray;
-import org.codehaus.jettison.json.JSONObject;
+import com.intellij.ide.util.PropertiesComponent;
+import net.sf.json.JSONArray;
+import net.sf.json.JSONObject;
 
-import java.io.*;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 /**
  * 后缀名映射 2017/3/20 10:31
- * PS: /Users/chenchubin/Library/Caches/IntelliJIdea2016.3/plugins-sandbox/plugins/computer_code_lines/classes/suffix/suffix.json
  */
 public class SuffixMapping {
+
+    private static final String SUFFIX_DATA_KEY = "suffix_data_key";
 
     public static final String SUFFIX = "suffix"; // 后缀名
     public static final String START_MORE_COMMENT = "start_more_comment"; // 多行注释开头
@@ -25,26 +26,23 @@ public class SuffixMapping {
      * 初始化后缀名映射 2017/3/20 10:39
      */
     public static void initMapping() {
-        BufferedReader bf = null;
         try {
             mapData.clear(); // 清空数据 2017/3/20 10:56
-            StringBuilder stringBuilder = new StringBuilder();
-//            File file = new File("suffix/suffix.json");
-            File file = new File(SuffixMapping.class.getResource("/suffix/suffix.json").getFile()); // 读取class内部资源 2017/3/20 11:34
-            if (!file.exists()) // 判断是否存在，不存在，则新创建一个文件 2017/3/20 10:41
-                file.createNewFile();
 
-            bf = new BufferedReader(new FileReader(file));
-            String line;
-            while ((line = bf.readLine()) != null) {
-                stringBuilder.append(line);
+            // 获取数据 2017/4/1 19:56
+            String[] data = _getData();
+            String json = "[";
+            for (int i = 0; i < data.length; i++) {
+                json += data[i] + ",";
             }
 
+            json += "]";
+
             // 解析json数据 2017/3/20 10:57
-            JSONArray jsonArray = new JSONArray(stringBuilder.toString());
+            JSONArray jsonArray = JSONArray.fromObject(json);
             JSONObject jsonObject;
             Map<String, String> mapData;
-            for (int i = 0; i < jsonArray.length(); i++) {
+            for (int i = 0; i < jsonArray.size(); i++) {
                 jsonObject = jsonArray.optJSONObject(i);
                 if (jsonObject != null) {
                     mapData = new HashMap<>();
@@ -57,16 +55,31 @@ public class SuffixMapping {
             }
 
         } catch (Exception e) {
+            e.printStackTrace();
             System.out.println("Suffix mapping Exception is " + e.getMessage());
-        } finally {
-            if (bf != null) {
-                try {
-                    bf.close();
-                } catch (IOException e) {
-                    System.out.println("Suffix mapping IOException is " + e.getMessage());
-                }
-            }
         }
+    }
+
+    /**
+     * 获取数据列表 2017/4/1 20:09
+     * @return
+     */
+    private static String[] _getData() {
+        if (PropertiesComponent.getInstance().isValueSet(SUFFIX_DATA_KEY)) {
+            return PropertiesComponent.getInstance().getValues(SUFFIX_DATA_KEY);
+        } else {
+            return new String[] {"{\"suffix\": \"JAVA\", \"start_more_comment\": \"/*\", \"end_more_comment\": \"*/\", \"single_comment\": \"//\"}",
+            "{\"suffix\": \"XML\", \"start_more_comment\": \"<!--\", \"end_more_comment\": \"-->\", \"single_comment\": \"\"}",
+            "{\"suffix\": \"PY\", \"start_more_comment\": \"''',\\\"\\\"\\\"\", \"end_more_comment\": \"''',\\\"\\\"\\\"\", \"single_comment\": \"#\"}"};
+        }
+    }
+
+    /**
+     * 保存数据 2017/4/1 20:20
+     * @param array
+     */
+    private static void _saveData(String[] array) {
+        PropertiesComponent.getInstance().setValues(SUFFIX_DATA_KEY, array);
     }
 
     /**
@@ -74,25 +87,18 @@ public class SuffixMapping {
      * @param data 数据
      */
     public static void addMapping(Map<String, String> data) {
-        BufferedWriter bw = null;
         try {
             // 初始化 2017/3/27 16:00
             if (mapData.size() == 0)
                 initMapping();
 
-            mapData.put(data.get(SUFFIX), data);
-            File file = new File(SuffixMapping.class.getResource("/suffix/suffix.json").getFile()); // 读取class内部资源 2017/3/20 11:34
-            if (file.exists()) { // 判断是否存在，存在，则删除 2017/3/21 13:44
-                file.delete();
-            }
+            if (data != null)
+                mapData.put(data.get(SUFFIX), data);
 
-            // 重新创建 2017/3/21 13:45
-            file.createNewFile();
-
-            bw = new BufferedWriter(new FileWriter(file));
-            JSONArray jsonArray = new JSONArray();
             JSONObject jsonObject;
             Map<String, String> mapTemp;
+            String[] datas = new String[mapData.size()];
+            int idx = 0;
             for (String suffix:mapData.keySet()) {
                 mapTemp = mapData.get(suffix);
                 jsonObject = new JSONObject();
@@ -101,20 +107,12 @@ public class SuffixMapping {
                 jsonObject.put(END_MORE_COMMENT, mapTemp.get(END_MORE_COMMENT));
                 jsonObject.put(SINGLE_COMMENT, mapTemp.get(SINGLE_COMMENT));
 
-                jsonArray.put(jsonObject);
+                datas[idx++] = jsonObject.toString();
             }
 
-            bw.write(jsonArray.toString());
+            _saveData(datas);
         } catch (Exception e) {
             System.out.println("Types Exception is " + e.getMessage());
-        } finally {
-            if (bw != null) {
-                try {
-                    bw.close();
-                } catch (IOException e) {
-                    System.out.println("Types IOException is " + e.getMessage());
-                }
-            }
         }
     }
 
@@ -123,48 +121,14 @@ public class SuffixMapping {
      * @param suffix key值
      */
     public static void removeMapping(String suffix) {
-        BufferedWriter bw = null;
-        try {
-            // 初始化 2017/3/27 16:00
-            if (mapData.size() == 0)
-                initMapping();
+        // 初始化 2017/3/27 16:00
+        if (mapData.size() == 0)
+            initMapping();
 
+        if (mapData.containsKey(suffix))
             mapData.remove(suffix);
-            File file = new File(SuffixMapping.class.getResource("/suffix/suffix.json").getFile()); // 读取class内部资源 2017/3/20 11:34
-            if (file.exists()) { // 判断是否存在，存在，则删除 2017/3/21 13:44
-                file.delete();
-            }
 
-            // 重新创建 2017/3/21 13:45
-            file.createNewFile();
-
-            bw = new BufferedWriter(new FileWriter(file));
-            JSONArray jsonArray = new JSONArray();
-            JSONObject jsonObject;
-            Map<String, String> mapTemp;
-            for (String key:mapData.keySet()) {
-                mapTemp = mapData.get(key);
-                jsonObject = new JSONObject();
-                jsonObject.put(SUFFIX, key);
-                jsonObject.put(START_MORE_COMMENT, mapTemp.get(START_MORE_COMMENT));
-                jsonObject.put(END_MORE_COMMENT, mapTemp.get(END_MORE_COMMENT));
-                jsonObject.put(SINGLE_COMMENT, mapTemp.get(SINGLE_COMMENT));
-
-                jsonArray.put(jsonObject);
-            }
-
-            bw.write(jsonArray.toString());
-        } catch (Exception e) {
-            System.out.println("Types Exception is " + e.getMessage());
-        } finally {
-            if (bw != null) {
-                try {
-                    bw.close();
-                } catch (IOException e) {
-                    System.out.println("Types IOException is " + e.getMessage());
-                }
-            }
-        }
+        addMapping(null);
     }
 
     /**
@@ -175,50 +139,15 @@ public class SuffixMapping {
         if (lstSuffix == null || lstSuffix.size() == 0)
             return;
 
-        BufferedWriter bw = null;
-        try {
-            // 初始化 2017/3/27 16:00
-            if (mapData.size() == 0)
-                initMapping();
+        // 初始化 2017/3/27 16:00
+        if (mapData.size() == 0)
+            initMapping();
 
-            for (String suffix:lstSuffix)
+        for (String suffix:lstSuffix)
+            if (mapData.containsKey(suffix))
                 mapData.remove(suffix);
 
-            File file = new File(SuffixMapping.class.getResource("/suffix/suffix.json").getFile()); // 读取class内部资源 2017/3/20 11:34
-            if (file.exists()) { // 判断是否存在，存在，则删除 2017/3/21 13:44
-                file.delete();
-            }
-
-            // 重新创建 2017/3/21 13:45
-            file.createNewFile();
-
-            bw = new BufferedWriter(new FileWriter(file));
-            JSONArray jsonArray = new JSONArray();
-            JSONObject jsonObject;
-            Map<String, String> mapTemp;
-            for (String key:mapData.keySet()) {
-                mapTemp = mapData.get(key);
-                jsonObject = new JSONObject();
-                jsonObject.put(SUFFIX, key);
-                jsonObject.put(START_MORE_COMMENT, mapTemp.get(START_MORE_COMMENT));
-                jsonObject.put(END_MORE_COMMENT, mapTemp.get(END_MORE_COMMENT));
-                jsonObject.put(SINGLE_COMMENT, mapTemp.get(SINGLE_COMMENT));
-
-                jsonArray.put(jsonObject);
-            }
-
-            bw.write(jsonArray.toString());
-        } catch (Exception e) {
-            System.out.println("Types Exception is " + e.getMessage());
-        } finally {
-            if (bw != null) {
-                try {
-                    bw.close();
-                } catch (IOException e) {
-                    System.out.println("Types IOException is " + e.getMessage());
-                }
-            }
-        }
+        addMapping(null);
     }
 
 }
